@@ -142,7 +142,7 @@ const RegistrationScreen = () => {
                   }
                   onFocus={() => setIsFocusedInput("password")}
                   onBlur={() => setIsFocusedInput(null)}
-                  secureTextEntry={!showPassword} // hides or shows password
+                  secureTextEntry={!showPassword}
                 />
                 {showPassword ? (
                   <Octicons

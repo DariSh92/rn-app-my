@@ -24,12 +24,10 @@ const LoginScreen = () => {
   const [state, setState] = useState(initialState);
   const [showPassword, setShowPassword] = useState(false);
   const [isFocusedInput, setIsFocusedInput] = useState(null);
-  // const [isShowKeyboard, setIsShowKeyboard] = useState(false);
 
   const { height, width } = useWindowDimensions();
 
   const keyboardHide = () => {
-    // setIsShowKeyboard(false);
     Keyboard.dismiss();
     setState(initialState);
   };
@@ -82,7 +80,6 @@ const LoginScreen = () => {
                   setState((prevState) => ({ ...prevState, email: value }))
                 }
                 onFocus={() => {
-                  // setIsShowKeyboard(true);
                   setIsFocusedInput("email");
                 }}
                 onBlur={() => setIsFocusedInput(null)}
@@ -100,11 +97,10 @@ const LoginScreen = () => {
                     setState((prevState) => ({ ...prevState, password: value }))
                   }
                   onFocus={() => {
-                    // setIsShowKeyboard(true);
                     setIsFocusedInput("password");
                   }}
                   onBlur={() => setIsFocusedInput(null)}
-                  secureTextEntry={!showPassword} // hides or shows password
+                  secureTextEntry={!showPassword}
                 />
                 {showPassword ? (
                   <Octicons
