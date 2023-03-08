@@ -20,7 +20,7 @@ const initialState = {
   password: "",
 };
 
-const LoginScreen = () => {
+const LoginScreen = ({ navigation }) => {
   const [state, setState] = useState(initialState);
   const [showPassword, setShowPassword] = useState(false);
   const [isFocusedInput, setIsFocusedInput] = useState(null);
@@ -64,7 +64,7 @@ const LoginScreen = () => {
               style={{
                 ...styles.form,
                 width: width,
-                marginBottom: isShowKeyboard ? -235 : 0,
+                // marginBottom: isShowKeyboard ? -235 : 0,
               }}
             >
               <Text style={styles.title}>Login</Text>
@@ -125,7 +125,13 @@ const LoginScreen = () => {
               >
                 <Text style={styles.btnTitle}>Log In</Text>
               </TouchableOpacity>
-              <Text style={styles.link}>Don't have an account? Sing up</Text>
+
+              <Text
+                onPress={() => navigation.navigate("Registration")}
+                style={styles.link}
+              >
+                Don't have an account? Sing up
+              </Text>
             </View>
           </KeyboardAvoidingView>
         </ImageBackground>
