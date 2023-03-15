@@ -5,18 +5,52 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import { Fontisto } from "@expo/vector-icons";
 import { SimpleLineIcons } from "@expo/vector-icons";
 import * as Location from "expo-location";
+import { storage } from "../../firebase/config";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import uuid from "react-native-uuid";
+import { db } from "../../firebase/config";
+import { collection, addDoc } from "firebase/firestore";
+import { useSelector } from "react-redux";
+
+const initialState = {
+  title: "",
+  locationDescr: "",
+};
 
 const CreatePostsScreen = ({ navigation }) => {
   const [camera, setCamera] = useState(null);
   const [photo, setPhoto] = useState(null);
+  const [isShowKeyboard, setIsShowKeyboard] = useState(false);
+  const [inputState, setInputState] = useState(initialState);
+
+  const { userId, name } = useSelector((state) => state.auth);
 
   const takePhoto = async () => {
     const location = await Location.getCurrentPositionAsync();
     const shot = await camera.takePictureAsync();
     setPhoto(shot.uri);
   };
-  const sendPhoto = () => {
-    navigation.navigate("DefaultScreen", { photo });
+
+  const handleSendData = async () => {
+    const photo = await uploadPhotoToServer();
+    setIsShowKeyboard(false);
+    Keyboard.dismiss();
+    const location = await Location.getCurrentPositionAsync();
+    try {
+      await addDoc(collection(db, "posts"), {
+        photo,
+        title: inputState.title,
+        locationDescr: inputState.locationDescr,
+        location: location.coords,
+        userId,
+        name,
+      });
+    } catch (e) {
+      Alert.alert("Error adding document: ", e.message);
+      console.error("Error adding document: ", e);
+    }
+    navigation.navigate("Posts");
+    setInputState(initialState);
   };
 
   useEffect(() => {
@@ -28,6 +62,16 @@ const CreatePostsScreen = ({ navigation }) => {
       }
     })();
   }, []);
+
+  const uploadPhotoToServer = async () => {
+    const response = await fetch(photo);
+    const file = await response.blob();
+    const photoId = uuid.v4();
+    const storageRef = ref(storage, `postImage/${photoId}`);
+    await uploadBytes(storageRef, file);
+    const photoUrl = await getDownloadURL(ref(storage, `postImage/${photoId}`));
+    return photoUrl;
+  };
 
   return (
     <View style={styles.container}>
@@ -47,11 +91,11 @@ const CreatePostsScreen = ({ navigation }) => {
         <TextInput
           style={styles.input}
           placeholder={"Название..."}
-          // value={inputState.title}
-          // onFocus={() => setIsShowKeyboard(true)}
-          // onChangeText={(value) =>
-          //   setInputState((prev) => ({ ...prev, title: value }))
-          // }
+          value={inputState.title}
+          onFocus={() => setIsShowKeyboard(true)}
+          onChangeText={(value) =>
+            setInputState((prev) => ({ ...prev, title: value }))
+          }
         />
         <View style={styles.locationInputContainer}>
           <SimpleLineIcons
@@ -63,16 +107,16 @@ const CreatePostsScreen = ({ navigation }) => {
           <TextInput
             style={styles.locationInput}
             placeholder={"Местность..."}
-            // value={inputState.locationDescr}
-            // onFocus={() => setIsShowKeyboard(true)}
-            // onChangeText={(value) =>
-            //   setInputState((prev) => ({ ...prev, locationDescr: value }))
-            // }
+            value={inputState.locationDescr}
+            onFocus={() => setIsShowKeyboard(true)}
+            onChangeText={(value) =>
+              setInputState((prev) => ({ ...prev, locationDescr: value }))
+            }
           />
         </View>
       </View>
       <TouchableOpacity
-        onPress={sendPhoto}
+        onPress={handleSendData}
         activeOpacity={0.8}
         style={styles.sendButton}
       >

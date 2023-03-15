@@ -10,39 +10,22 @@ import {
 
 import { FontAwesome5 } from "@expo/vector-icons";
 import { SimpleLineIcons } from "@expo/vector-icons";
+import { db } from "../../firebase/config";
+import { collection, onSnapshot } from "firebase/firestore";
 
 const DefaultPostsScreen = ({ navigation }) => {
   const [posts, setPosts] = useState([]);
 
-  useEffect(() => {
-    if (route.params) {
-      setPosts((prevState) => [...prevState, route.params]);
-    }
-  }, [route.params]);
+  const getAllPosts = async () => {
+    await onSnapshot(collection(db, "posts"), (data) => {
+      setPosts(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+    });
+  };
 
-  //   return (
-  //     <View style={styles.container}>
-  //       <FlatList
-  //         data={posts}
-  //         keyExtractor={(item, index) => index.toString()}
-  //         renderItem={({ item }) => (
-  //           <View
-  //             style={{
-  //               marginBottom: 10,
-  //               justifyContent: "center",
-  //               alignItems: "center",
-  //             }}
-  //           >
-  //             <Image
-  //               source={{ uri: item.photo }}
-  //               style={{ width: 10, height: 200 }}
-  //             ></Image>
-  //           </View>
-  //         )}
-  //       />
-  //     </View>
-  //   );
-  // };
+  useEffect(() => {
+    getAllPosts();
+  }, []);
+
   return (
     <View style={styles.container}>
       {posts && (

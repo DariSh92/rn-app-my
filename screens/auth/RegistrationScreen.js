@@ -14,7 +14,10 @@ import {
   useWindowDimensions,
   Alert,
 } from "react-native";
+import { useDispatch } from "react-redux";
 import { AntDesign, Octicons } from "@expo/vector-icons";
+import { authSignUpUser } from "../../redux/auth/authOperations";
+import { use } from "react-devtools-core";
 
 const initialState = {
   name: "",
@@ -28,11 +31,14 @@ const RegistrationScreen = ({ navigation }) => {
   const [isFocusedInput, setIsFocusedInput] = useState(null);
   const [isLoadedAvatar, setIsLoadedAvatar] = useState(false);
 
+  const dispatch = useDispatch();
+
   const { height, width } = useWindowDimensions();
 
   const keyboardHide = () => {
     Keyboard.dismiss();
     setState(initialState);
+    dispatch(authSignUpUser(state));
   };
 
   const handleShowPassword = () => {
@@ -98,14 +104,15 @@ const RegistrationScreen = ({ navigation }) => {
                   )}
                 </TouchableOpacity>
               </View>
-              <Text style={styles.title}>Registration</Text>
+              <Text style={styles.title}>Регистрация</Text>
               <TextInput
                 style={{
                   ...styles.input,
+
                   borderColor:
                     isFocusedInput === "login" ? "#FF6C00" : "#E8E8E8",
                 }}
-                placeholder="Login"
+                placeholder="Логин"
                 value={state.name}
                 onChangeText={(value) =>
                   setState((prevState) => ({ ...prevState, name: value }))

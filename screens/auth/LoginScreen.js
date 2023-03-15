@@ -13,6 +13,8 @@ import {
   useWindowDimensions,
   Alert,
 } from "react-native";
+import { useDispatch } from "react-redux";
+import { authSignInUser } from "../../redux/auth/authOperations";
 import { Octicons } from "@expo/vector-icons";
 
 const initialState = {
@@ -25,11 +27,14 @@ const LoginScreen = ({ navigation }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [isFocusedInput, setIsFocusedInput] = useState(null);
 
+  const dispatch = useDispatch();
+
   const { height, width } = useWindowDimensions();
 
   const keyboardHide = () => {
     Keyboard.dismiss();
     setState(initialState);
+    dispatch(authSignInUser(email, password));
   };
 
   const handleShowPassword = () => {

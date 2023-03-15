@@ -1,20 +1,8 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import TabBar from "../../components/TabBar";
 
-const Home = () => {
-  return (
-    <View style={styles.container}>
-      <Text>PostsScreen</Text>
-    </View>
-  );
+const Home = ({ navigation, route }) => {
+  return <TabBar />;
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-});
 
 export default Home;
